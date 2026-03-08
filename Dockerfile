@@ -5,6 +5,8 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm ci
 COPY . .
+# 构建时需占位，运行时由 Sealos 注入真实密钥
+ENV GEMINI_API_KEY=build-placeholder
 RUN npm run build
 
 FROM node:20-alpine AS runner
