@@ -4,7 +4,7 @@ import { corsPreflight, jsonWithCors } from "@/lib/cors";
 import { cleanBase64 } from "@/lib/utils/base64";
 import { resizeImage } from "@/lib/utils/resize";
 
-export const maxDuration = 60;
+export const maxDuration = 180;
 
 if (!process.env.GEMINI_API_KEY) {
   throw new Error("GEMINI_API_KEY environment variable is not set.");
