@@ -17,3 +17,15 @@ export async function resizeImage(
     mimeType: "image/jpeg",
   };
 }
+
+/** 统一转 JPEG 压缩，减小传输体积约 50–70% */
+export async function compressToJpeg(
+  base64Data: string,
+  mimeType = "image/png"
+): Promise<{ data: string; mimeType: string }> {
+  const buffer = Buffer.from(base64Data, "base64");
+  const out = await sharp(buffer)
+    .toFormat("jpeg", { quality: 85 })
+    .toBuffer();
+  return { data: out.toString("base64"), mimeType: "image/jpeg" };
+}

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 import { corsPreflight, jsonWithCors } from "@/lib/cors";
 import { cleanBase64 } from "@/lib/utils/base64";
-import { resizeImage } from "@/lib/utils/resize";
+import { compressToJpeg, resizeImage } from "@/lib/utils/resize";
 
 export const maxDuration = 180;
 
@@ -179,6 +179,10 @@ export async function POST(req: Request) {
         const resized = await resizeImage(imageBytes!, 1340, 1785, responseMimeType);
         imageBytes = resized.data;
         responseMimeType = resized.mimeType;
+      } else {
+        const compressed = await compressToJpeg(imageBytes!, responseMimeType);
+        imageBytes = compressed.data;
+        responseMimeType = compressed.mimeType;
       }
       return jsonWithCors({
         image: { imageBytes, mimeType: responseMimeType },
@@ -247,9 +251,13 @@ export async function POST(req: Request) {
       let imgBytes = parsed.imageData;
       let imgMime = parsed.responseMimeType;
       if (rawRatio === "1340:1785") {
-        const resized = await resizeImage(imgBytes, 1340, 1785, imgMime);
+        const resized = await resizeImage(imgBytes!, 1340, 1785, imgMime);
         imgBytes = resized.data;
         imgMime = resized.mimeType;
+      } else {
+        const compressed = await compressToJpeg(imgBytes!, imgMime);
+        imgBytes = compressed.data;
+        imgMime = compressed.mimeType;
       }
       return jsonWithCors({
         image: { imageBytes: imgBytes, mimeType: imgMime },
@@ -268,9 +276,13 @@ export async function POST(req: Request) {
           let imgBytes = parsed.imageData;
           let imgMime = parsed.responseMimeType;
           if (rawRatio === "1340:1785") {
-            const resized = await resizeImage(imgBytes, 1340, 1785, imgMime);
+            const resized = await resizeImage(imgBytes!, 1340, 1785, imgMime);
             imgBytes = resized.data;
             imgMime = resized.mimeType;
+          } else {
+            const compressed = await compressToJpeg(imgBytes!, imgMime);
+            imgBytes = compressed.data;
+            imgMime = compressed.mimeType;
           }
           return jsonWithCors({
             image: { imageBytes: imgBytes, mimeType: imgMime },
